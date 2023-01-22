@@ -30,6 +30,7 @@ exports.getItemByUserId = async (req, res, next) => {
   });
 };
 
+// Add item to favorites
 exports.addItem = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

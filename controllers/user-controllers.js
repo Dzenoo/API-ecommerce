@@ -71,8 +71,6 @@ exports.signup = async (req, res, next) => {
     token = jwt.sign(
       {
         userId: createdUser.id,
-        email: createdUser.email,
-        name: createdUser.name,
         isAdmin: createdUser.isAdmin,
       },
       process.env.JWTSTR,
@@ -86,9 +84,7 @@ exports.signup = async (req, res, next) => {
     return next(error);
   }
 
-  res
-    .status(201)
-    .json({ userId: createdUser.id, email: createdUser.email, token: token });
+  res.status(201).json({ userId: createdUser.id, token: token });
 };
 
 exports.login = async (req, res, next) => {
@@ -134,8 +130,6 @@ exports.login = async (req, res, next) => {
     token = jwt.sign(
       {
         userId: existingUser.id,
-        email: existingUser.email,
-        name: existingUser.name,
         isAdmin: existingUser.isAdmin,
       },
       process.env.JWTSTR,
@@ -151,7 +145,6 @@ exports.login = async (req, res, next) => {
 
   res.json({
     userId: existingUser.id,
-    email: existingUser.email,
     isAdmin: existingUser.isAdmin,
     token: token,
   });

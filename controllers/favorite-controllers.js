@@ -3,7 +3,7 @@ const { validationResult } = require("express-validator");
 const HttpError = require("../models/http-error");
 
 const User = require("../models/user");
-const Favorite = require("../models/favproduct");
+const Favorite = require("../models/favorite");
 
 exports.getItemByUserId = async (req, res, next) => {
   const userId = req.params.uid;
@@ -17,12 +17,6 @@ exports.getItemByUserId = async (req, res, next) => {
       500
     );
     return next(error);
-  }
-
-  if (!userFavs || userFavs.favorites.length === 0) {
-    return next(
-      new HttpError("Could not find favs for the provided user id.", 404)
-    );
   }
 
   res.json({

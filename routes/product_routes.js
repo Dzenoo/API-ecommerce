@@ -39,5 +39,4 @@ router.patch(
 
 router.delete("/:pid", checkAdmin, productControllers.deleteProduct);
 
-
 module.exports = router;

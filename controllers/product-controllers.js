@@ -4,7 +4,6 @@ const { validationResult } = require("express-validator");
 
 const HttpError = require("../models/http-error");
 const Product = require("../models/product");
-const fileDelete = require("../middleware/file-delete");
 
 exports.getProducts = async (req, res, next) => {
   let products;
@@ -51,7 +50,7 @@ exports.createProduct = async (req, res, next) => {
   const createdProduct = new Product({
     title,
     description,
-    image: req.file.location,
+    image: req.file.path,
     price,
     category,
     inStock,
@@ -67,7 +66,7 @@ exports.createProduct = async (req, res, next) => {
     return next(error);
   }
 
-  res.status(200).json({ product: createdProduct });
+  res.send("Created" + createdProduct);
 };
 
 exports.editProduct = async (req, res, next) => {

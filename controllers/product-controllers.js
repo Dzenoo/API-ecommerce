@@ -4,7 +4,7 @@ const { validationResult } = require("express-validator");
 
 const HttpError = require("../models/http-error");
 const Product = require("../models/product");
-const fileDelete = require("../middlewares/file-delete");
+const fileDelete = require("../middleware/file-delete");
 
 exports.getProducts = async (req, res, next) => {
   let products;

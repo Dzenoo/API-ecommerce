@@ -4,6 +4,7 @@ const { validationResult } = require("express-validator");
 
 const HttpError = require("../models/http-error");
 const Product = require("../models/product");
+const fileDelete = require("../middlewares/file-delete");
 
 exports.getProducts = async (req, res, next) => {
   let products;
@@ -50,7 +51,7 @@ exports.createProduct = async (req, res, next) => {
   const createdProduct = new Product({
     title,
     description,
-    image: req.file.path,
+    image: req.file.location,
     price,
     category,
     inStock,
@@ -116,8 +117,6 @@ exports.deleteProduct = async (req, res, next) => {
     return next(error);
   }
 
-  const imagePath = product.image;
-
   try {
     await product.remove();
   } catch (err) {
@@ -125,9 +124,12 @@ exports.deleteProduct = async (req, res, next) => {
     return next(error);
   }
 
-  fs.unlink(imagePath, (err) => {
-    console.log(err);
-  });
+  const imagePath = product.image;
+  fileDelete(imagePath);
+
+  // fs.unlink(imagePath, (err) => {
+  //   console.log(err);
+  // });
 
   res.status(200).json({ message: "Artikal izbrisan" });
 };

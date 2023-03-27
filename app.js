@@ -1,8 +1,10 @@
 const fs = require("fs");
 const path = require("path");
+
 const express = require("express");
-const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+
 const cors = require("cors");
 
 const favoriteRoutes = require("./routes/favorite_routes.js");
@@ -10,13 +12,14 @@ const productRoutes = require("./routes/product_routes.js");
 const userRoutes = require("./routes/user_routes");
 const orderRoutes = require("./routes/order_routes");
 const HttpError = require("./models/http-error.js");
+const fileDelete = require("./middleware/file-delete");
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(cors());
 
-app.use("/uploads/images", express.static(path.join("uploads", "images")));
+// app.use("/uploads/images", express.static(path.join("uploads", "images")));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*"); // Pristupi Api sa bilo kojeg servera, send Request
@@ -41,9 +44,11 @@ app.use((req, res, next) => {
 
 app.use((error, req, res, next) => {
   if (req.file) {
-    fs.unlink(req.file.path, (err) => {
-      console.log(err);
-    });
+    fileDelete(req.file.location);
+
+    // fs.unlink(req.file.path, (err) => {
+    //   console.log(err);
+    // });
   }
 
   if (res.headerSent) {

@@ -73,7 +73,7 @@ exports.signup = async (req, res, next) => {
         userId: createdUser.id,
         isAdmin: createdUser.isAdmin,
       },
-      process.env.JWTSTR,
+      "tajnistring",
       { expiresIn: "1h" }
     );
   } catch (err) {
@@ -132,7 +132,7 @@ exports.login = async (req, res, next) => {
         userId: existingUser.id,
         isAdmin: existingUser.isAdmin,
       },
-      process.env.JWTSTR,
+      "tajnistring",
       { expiresIn: "1h" }
     );
   } catch (err) {

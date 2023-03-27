@@ -1,7 +1,17 @@
+const aws = require("aws-sdk");
 const multer = require("multer");
-const { v4: uuid } = require("uuid");
+const multerS3 = require("multer-s3");
+require("dotenv").config();
 
-const MIME_TYPE = {
+aws.config.update({
+  secretAccessKey: "0VFzY6gN6bHxXDvOeMGPzrm5k8ziGCk7vJa2kYuL",
+  accessKeyId: "AKIAUDYTT2VNDAS4QPDL",
+  region: "eu-central-1",
+});
+
+const s3 = new aws.S3();
+
+const MIME_TYPE_MAP = {
   "image/png": "png",
   "image/jpeg": "jpeg",
   "image/jpg": "jpg",
@@ -9,20 +19,20 @@ const MIME_TYPE = {
 
 const fileUpload = multer({
   limits: 600000,
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, "uploads/images");
+  storage: multerS3({
+    s3: s3,
+    bucket: "ecommerce-mern-build",
+    acl: "public-read",
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: "META_DATA" });
     },
-
-    filename: (req, file, cb) => {
-      const ext = MIME_TYPE[file.mimetype];
-      cb(null, uuid() + "." + ext);
+    key: function (req, file, cb) {
+      cb(null, Date.now().toString());
     },
   }),
-
   fileFilter: (req, file, cb) => {
-    const isValid = !!MIME_TYPE[file.mimetype];
-    let error = isValid ? null : new Error("Netacan mime type");
+    const isValid = !!MIME_TYPE_MAP[file.mimetype];
+    let error = isValid ? null : new Error("Invalid mime type !");
     cb(error, isValid);
   },
 });

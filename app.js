@@ -18,7 +18,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-// app.use("/uploads/images", express.static(path.join("uploads", "images")));
+app.use("/uploads/images", express.static(path.join("uploads", "images")));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -36,33 +36,31 @@ app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/favorites", favoriteRoutes);
 
-// app.use((req, res, next) => {
-//   const error = new HttpError("Could not find this route", 404);
-//   throw error;
-// });
+app.use((req, res, next) => {
+  const error = new HttpError("Could not find this route", 404);
+  throw error;
+});
 
-// app.use((error, req, res, next) => {
-//   if (req.file) {
-//     // fileDelete(req.file.location);
+app.use((error, req, res, next) => {
+  if (req.file) {
+    fs.unlink(req.file.path, (err) => {
+      console.log(err);
+    });
+  }
 
-//     fs.unlink(req.file.path, (err) => {
-//       console.log(err);
-//     });
-//   }
+  if (res.headerSent) {
+    return next(error);
+  }
 
-//   if (res.headerSent) {
-//     return next(error);
-//   }
+  res.status(error.code || process.env.PORT);
+  res.json({ message: error.message || "An unknown error" });
+});
 
-//   res.status(error.code || process.env.PORT);
-//   res.json({ message: error.message || "An unknown error" });
-// });
-
-// mongoose.set("strictQuery", false);
+mongoose.set("strictQuery", false);
 
 mongoose
   .connect(
-    `mongodb+srv://Dzenis:BZjS88NZKV9lV0et@cluster0.8suhkcc.mongodb.net/Ecommerce?retryWrites=true&w=majority`
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.8suhkcc.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
   )
   .then((req, res, next) => {
     app.listen(8000);

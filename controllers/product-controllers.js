@@ -50,7 +50,7 @@ exports.createProduct = async (req, res, next) => {
   const createdProduct = new Product({
     title,
     description,
-    image: req.file.location,
+    image: req.file.path,
     price,
     category,
     inStock,
@@ -122,6 +122,10 @@ exports.deleteProduct = async (req, res, next) => {
     const error = new HttpError("Nije moguce izbrisati artikal", 500);
     return next(error);
   }
+
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
 
   res.status(200).json({ message: "Artikal izbrisan" });
 };

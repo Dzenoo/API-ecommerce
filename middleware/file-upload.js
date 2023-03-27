@@ -1,15 +1,5 @@
-const aws = require("aws-sdk");
 const multer = require("multer");
-const multerS3 = require("multer-s3");
-require("dotenv").config();
-
-aws.config.update({
-  secretAccessKey: process.env.AWS_SECRET_KEY,
-  accessKeyId: process.env.AWS_ACCESS_KEY,
-  region: process.env.AWS_REGION,
-});
-
-const s3 = new aws.S3();
+const { v4: uuid } = require("uuid");
 
 const MIME_TYPE_MAP = {
   "image/png": "png",
@@ -18,21 +8,19 @@ const MIME_TYPE_MAP = {
 };
 
 const fileUpload = multer({
-  limits: 600000,
-  storage: multerS3({
-    s3: s3,
-    bucket: "ecommerce-mern-build",
-    acl: "public-read",
-    metadata: function (req, file, cb) {
-      cb(null, { fieldName: "META_DATA" });
+  limits: 60000,
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "uploads/images");
     },
-    key: function (req, file, cb) {
-      cb(null, Date.now().toString());
+    filename: (req, file, cb) => {
+      const ext = MIME_TYPE_MAP[file.mimetype];
+      cb(null, uuid() + "." + ext);
     },
   }),
   fileFilter: (req, file, cb) => {
     const isValid = !!MIME_TYPE_MAP[file.mimetype];
-    let error = isValid ? null : new Error("Invalid mime type !");
+    let error = isValid ? null : new Error("Invalid mime type");
     cb(error, isValid);
   },
 });

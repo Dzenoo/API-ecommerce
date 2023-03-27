@@ -9,7 +9,7 @@ aws.config.update({
   region: process.env.AWS_REGION,
 });
 
-const s3 = new aws.s3();
+const s3 = new aws.S3();
 
 const MIME_TYPE = {
   "image/png": "png",
